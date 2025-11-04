@@ -74,7 +74,10 @@ FLOAT: 10.05
 VAL: val
 IDENTIFIER: mutableList
 COLON: :
-MUTABLE_LIST: MutableList<Long>
+IDENTIFIER: MutableList
+LESS_THAN: <
+IDENTIFIER: Long
+GREATER_THAN: >
 ASSIGMENT: =
 IDENTIFIER: mutableListOf
 LPAREN: (

@@ -78,27 +78,10 @@ t_NOT=r'!'
 t_ASSIGMENT=r'='
 t_COMMENT_ONE_LINE=r'\/\/.*'
 t_COMMENT_MULTIPLE_LINES=r'\/\*[^\*\/]*\*\/'
-
-def t_MUTABLE_LIST(t):
-    r'MutableList<.+>'
-    return t
-
-def t_MUTABLE_LIST_ERROR(t):
-    r'MutableList<\s*>|MutableList<>|MutableList\s*<|MutableList[^<]'
-    print(f"Error léxico: MutableList mal formado '{t.value}' en línea {t.lineno}, posición {t.lexpos}")
     
 #Fin de avance 1 por parte de Jefferson Saltos
 
 #Inicio de avance 1 por parte de Steve Robinson
-
-def t_MUTABLE_MAP(t):
-    r'MutableMap<.+,.+>'
-    return t
-
-def t_MUTABLE_MAP_ERROR(t):
-    r'MutableMap<\s*>|MutableMap<.+>|MutableMap\s*<|MutableMap[^<]'
-    print(f"Error léxico: MutableMap mal formado '{t.value}' en línea {t.lineno}, posición {t.lexpos}")
-    return f"Error léxico: MutableMap mal formado '{t.value}' en línea {t.lineno}, posición {t.lexpos}"
 
 def t_GREATER_OR_EQUAL(t):
     r'>='
