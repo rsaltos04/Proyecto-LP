@@ -51,7 +51,10 @@ tokens = (
    "COMMENT_ONE_LINE",
    "COMMENT_MULTIPLE_LINES",
    "RANGE",
-   "COMMA"
+   "COMMA",
+   "PRINT",
+   "PRINTLN",
+   "READLN",
 ) + tuple(reserved.values())
 
 # Regular expression rules for simple tokens
@@ -82,6 +85,15 @@ t_COMMENT_MULTIPLE_LINES=r'\/\*[^\*\/]*\*\/'
 #Fin de avance 1 por parte de Jefferson Saltos
 
 #Inicio de avance 1 por parte de Steve Robinson
+
+def t_MUTABLE_LIST(t):
+    r'MutableList'
+    return t
+
+def t_MUTABLE_MAP(t):
+    r'MutableMap'
+    return t
+
 
 def t_GREATER_OR_EQUAL(t):
     r'>='
@@ -125,6 +137,18 @@ def t_INTEGER(t):
     t.value = int(t.value)
     return t
 
+def t_PRINT(t):
+    r'print'
+    return t
+
+def t_PRINTLN(t):
+    r'println'
+    return t
+
+def t_READLN(t):
+    r'readln'
+    return t
+
 # Define a rule so we can track line numbers
 def t_newline(t):
     r'\n+'
@@ -142,6 +166,7 @@ def t_error(t):
 # Build the lexer
 lexer = lex.lex()
 
+'''
 with open('algoritmos/ByeWorld.kt', 'r') as file:
     all_lines = file.readlines()
     data = "".join(all_lines)
@@ -184,3 +209,4 @@ with open(ruta, "w", encoding="utf-8") as f:
 print(f"Log generado: {ruta}")
 
 #Fin de avance 1 por parte de Steve Robinson
+'''
