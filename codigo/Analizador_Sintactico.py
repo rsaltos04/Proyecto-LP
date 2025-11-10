@@ -3,7 +3,7 @@ from Analizador_Lexico import tokens
 
 #Regla definida por Jefferson Saltos:
 def p_programa(p):
-    '''programa : sentencia 
+    '''programa : sentencia
     | sentencia programa'''
 
 #Regla definida por Jefferson Saltos:
@@ -40,7 +40,9 @@ def p_declaration_options(p):
     '''declaration_options :  INTEGER
     | FLOAT
     | STRING
-    | BOOLEAN'''
+    | aritmetic_operation
+    | boolean_operation
+    | call_function '''
 
 #Regla definida por Jefferson Saltos
 def p_declaration_val(p):
@@ -74,7 +76,8 @@ def p_operator(p):
 #Regla definida por Jefferson Saltos
 def p_boolean_operation(p):
     '''boolean_operation : boolean_variable logical_operator boolean_variable
-    | boolean_operation logical_operator boolean_variable'''
+    | boolean_operation logical_operator boolean_variable
+    | boolean_variable'''
 
 #Regla definida por Jefferson Saltos
 def p_logical_operator(p):
@@ -166,8 +169,7 @@ def p_control_else_if(p):
 
 #Regla definida por Jefferson Saltos
 def p_control_if_input(p):
-    '''control_if_input : boolean_variable
-    | boolean_operation'''
+    '''control_if_input : boolean_operation'''
 
 #Regla definida por Steve Robinson
 def p_readline(p):
@@ -201,17 +203,8 @@ def p_return_statements(p):
     '''return_statements : RETURN returnables'''
 
 #Regla definida por Steve Robinson
-def p_not_empty_returnables(p):
-    '''not_empty_returnables : declaration_options
-    | IDENTIFIER
-    | aritmetic_operation
-    | boolean_operation
-    | call_function
-    '''
-
-#Regla definida por Steve Robinson
 def p_returnables(p):
-    '''returnables : not_empty_returnables 
+    '''returnables : declaration_options 
     | empty
     '''
 
@@ -281,12 +274,14 @@ def p_error(p):
 # Build the parser
 parser = yacc.yacc()
 
-while True:
-   try:
-       s = input('calc > ')
-   except EOFError:
-       break
-   if not s: continue
-   result = parser.parse(s)
-   print(result)
+lineas = """fun funcion() {
 
+        var hola: vara = !hola
+        var bool: Boolean = hola && hola || hola
+       
+
+}
+"""
+
+result = parser.parse(lineas)
+print(result)

@@ -3,8 +3,6 @@ import ply.lex as lex
 from datetime import datetime
 import os
 
-literals = ("-")
-
 # Inicio del avance 1 por parte de Jefferson Saltos
 reserved = {
    "fun": "FUNCTION",
@@ -51,8 +49,6 @@ tokens = (
    "ASSIGMENT",
    "EQUALS_TO",
    "NOT_EQUALS",
-   "COMMENT_ONE_LINE",
-   "COMMENT_MULTIPLE_LINES",
    "RANGE",
    "COMMA",
    "PRINT",
