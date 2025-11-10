@@ -3,6 +3,8 @@ import ply.lex as lex
 from datetime import datetime
 import os
 
+literals = ("-")
+
 # Inicio del avance 1 por parte de Jefferson Saltos
 reserved = {
    "fun": "FUNCTION",
@@ -14,6 +16,7 @@ reserved = {
    'var' : 'VAR',
    'in' : 'IN',
    'return' : 'RETURN',
+   'class' : 'CLASS',
 }
 
 # List of token names.   This is always required
@@ -127,18 +130,18 @@ def t_STRING(t):
     return t
 
 def t_IDENTIFIER(t):
-    r'[A-Za-z$_][\w$]*'
+    r'[A-Za-z_][\w]*'
     t.type= reserved.get(t.value,"IDENTIFIER")
     return t
 
 def t_FLOAT(t):
-    r'(\s-)?\d+\.\d+'
+    r'\d+\.\d+'
     t.value=float(t.value)
     return t
 
 # A regular expression rule with some action code
 def t_INTEGER(t):
-    r'(\s-)?\d+'
+    r'\d+'
     t.value = int(t.value)
     return t
 
@@ -170,6 +173,25 @@ def t_error(t):
 
 # Build the lexer
 lexer = lex.lex()
+
+"""
+data = ""
+i --9
+i - -9
+i - 9
+i-9
+""
+lexer.input(data)
+
+while True:
+    tok = lexer.token()
+    if not tok:
+        break
+    if isinstance(tok, str):  # error
+        print(tok)
+    else:
+        print(f"{tok.type}: {tok.value}")
+"""
 
 '''
 with open('algoritmos/ByeWorld.kt', 'r') as file:

@@ -21,7 +21,8 @@ def p_sentencia(p):
     | readline
     | for_loop
     | while_loop
-    | function'''
+    | function
+    | class'''
 
 #Regla definida por Jefferson Saltos:
 def p_sentencias(p):
@@ -218,6 +219,20 @@ def p_options_function_block(p):
 def p_statements_function_block(p):
     '''statements_function_block :  options_function_block
     | statements_function_block options_function_block'''
+
+#Regla definida por Steve Robinson
+def p_class(p):
+    '''class : class_declaration'''
+
+#Regla definida por Steve Robinson
+def p_class_declaration(p):
+    '''class_declaration :  CLASS IDENTIFIER LPAREN parameters RPAREN LBRACE class_statements RBRACE'''
+
+#Regla definida por Steve Robinso
+def p_class_statements(p):
+    '''class_statements :  declaration_var 
+    | declaration_val
+    | function'''
 
 #Regla definida por Jefferson Saltos
 def p_empty(p):
