@@ -17,7 +17,11 @@ def p_sentencia(p):
     | print_function
     | println_function
     | mutable_map
-    | control_if'''
+    | control_if
+    | readline
+    | for_loop
+    | while_loop
+    | function'''
 
 #Regla definida por Jefferson Saltos:
 def p_sentencias(p):
@@ -26,11 +30,13 @@ def p_sentencias(p):
 
 #Regla definida por Jefferson Saltos:
 def p_declaration_var(p):
-    'declaration_var : VAR IDENTIFIER COLON data_types ASSIGMENT declaration_options '
+    'declaration_var : VAR IDENTIFIER COLON data_types ASSIGMENT declaration_options'
 
 #Regla definida por Jefferson Saltos:
 def p_data_types(p):
-    'data_types : IDENTIFIER'
+    '''data_types : IDENTIFIER
+    | mutable_map
+    | mutable_list '''
 
 #Regla definida por Jefferson Saltos:
 def p_declaration_options(p):
@@ -41,17 +47,23 @@ def p_declaration_options(p):
 
 #Regla definida por Jefferson Saltos
 def p_declaration_val(p):
-    'declaration_val : VAL IDENTIFIER COLON data_types ASSIGMENT declaration_options '
+    'declaration_val : VAL IDENTIFIER COLON data_types ASSIGMENT declaration_options'
 
 #Regla definida por Jefferson Saltos
 def p_aritmetic_operation(p):
-    '''aritmetic_operation : number operator number
-    | aritmetic_operation operator number '''
+    '''aritmetic_operation : number_variable operator number_variable
+    | aritmetic_operation operator number_variable '''
 
 #Regla definida por Jefferson Saltos
 def p_number(p):
     '''number : INTEGER
     | FLOAT'''
+
+#Regla definida por Steve Robinson
+def p_number_variable(p):
+    '''number_variable : INTEGER
+    | FLOAT
+    | IDENTIFIER   '''
 
 #Regla definida por Jefferson Saltos
 def p_operator(p):
@@ -64,8 +76,8 @@ def p_operator(p):
 
 #Regla definida por Jefferson Saltos
 def p_boolean_operation(p):
-    '''boolean_operation : optional_boolean_operator boolean_variable logical_operator optional_boolean_operator boolean_variable
-    | boolean_operation logical_operator optional_boolean_operator boolean_variable'''
+    '''boolean_operation : boolean_variable logical_operator boolean_variable
+    | boolean_operation logical_operator boolean_variable'''
 
 #Regla definida por Jefferson Saltos
 def p_logical_operator(p):
@@ -74,24 +86,22 @@ def p_logical_operator(p):
     '''
 
 #Regla definida por Jefferson Saltos
-def p_optional_boolean_operator(p):
-    '''optional_boolean_operator : NOT
-    | empty'''
-
-#Regla definida por Jefferson Saltos
 def p_boolean_variable(p):
     '''boolean_variable : IDENTIFIER
-    | BOOLEAN'''
+    | BOOLEAN
+    | comparison_operation
+    | NOT boolean_variable'''
 
 #Regla definida por Jefferson Saltos
 def p_comparison_operation(p):
-    'comparison_operation : comparison_variable comparison_operator comparison_variable '
+    '''comparison_operation : comparison_variable comparison_operator comparison_variable '''
 
 #Regla definida por Jefferson Saltos
 def p_comparison_variable(p):
     '''comparison_variable : IDENTIFIER
     | number
-    | STRING'''
+    | STRING
+    | aritmetic_operation'''
 
 #Regla definida por Jefferson Saltos
 def p_comparison_operator(p):
@@ -132,10 +142,13 @@ def p_println_function(p):
 def p_mutable_map(p):
     'mutable_map : MUTABLE_MAP LESS_THAN generic COMMA generic GREATER_THAN'
 
+#Regla definida por Steve Robinson
+def p_mutable_list(p):
+    'mutable_list : MUTABLE_LIST LESS_THAN generic GREATER_THAN'
+
 #Regla definida por Jefferson Saltos
 def p_generic(p):
-    '''generic : data_types 
-    | mutable_map'''
+    '''generic : data_types'''
 
 #Regla definida por Jefferson Saltos
 def p_control_if(p):
@@ -157,8 +170,54 @@ def p_control_else_if(p):
 #Regla definida por Jefferson Saltos
 def p_control_if_input(p):
     '''control_if_input : boolean_variable
-    | comparison_operation
     | boolean_operation'''
+
+#Regla definida por Steve Robinson
+def p_readline(p):
+    '''readline : READLN LPAREN RPAREN'''
+
+#Regla definida por Steve Robinson
+def p_for_loop(p):
+    '''for_loop : FOR LPAREN for_content RPAREN LBRACE options_control_block RBRACE'''
+
+#Regla definida por Steve Robinson
+def p_for_content(p):
+    '''for_content : IDENTIFIER IN INTEGER RANGE INTEGER
+    | IDENTIFIER IN IDENTIFIER'''
+
+#Regla definida por Steve Robinson
+def p_while_loop(p):
+    '''while_loop : WHILE LPAREN control_if_input RPAREN LBRACE options_control_block RBRACE'''
+
+#Regla definida por Steve Robinson
+def p_function(p):
+    '''function : FUNCTION IDENTIFIER LPAREN parameters RPAREN LBRACE statements_function_block RBRACE'''
+
+#Regla definida por Steve Robinson
+def p_parameters(p):
+    '''parameters :  IDENTIFIER COLON IDENTIFIER
+    | parameters COMMA IDENTIFIER COLON IDENTIFIER
+    | empty'''
+
+#Regla definida por Steve Robinson
+def p_return_statements(p):
+    '''return_statements : RETURN
+    | RETURN declaration_options
+    | RETURN IDENTIFIER
+    | RETURN aritmetic_operation
+    | RETURN boolean_operation
+    | RETURN call_function'''
+
+#Regla definida por Steve Robinson
+def p_options_function_block(p):
+    '''options_function_block : sentencia 
+    | return_statements
+    | empty'''
+
+#Regla definida por Steve Robinson
+def p_statements_function_block(p):
+    '''statements_function_block :  options_function_block
+    | statements_function_block options_function_block'''
 
 #Regla definida por Jefferson Saltos
 def p_empty(p):

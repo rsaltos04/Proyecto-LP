@@ -79,12 +79,18 @@ t_AND=r'&&'
 t_OR=r'\|\|'
 t_NOT=r'!'
 t_ASSIGMENT=r'='
-t_COMMENT_ONE_LINE=r'\/\/.*'
-t_COMMENT_MULTIPLE_LINES=r'\/\*[^\*\/]*\*\/'
     
 #Fin de avance 1 por parte de Jefferson Saltos
 
 #Inicio de avance 1 por parte de Steve Robinson
+
+def t_COMMENT_ONE_LINE(t):
+    r'\/\/.*'
+    pass
+
+def t_COMMENT_MULTIPLE_LINES(t):
+    r'\/\*[^\*\/]*\*\/'
+    pass
 
 def t_MUTABLE_LIST(t):
     r'MutableList'
@@ -93,7 +99,6 @@ def t_MUTABLE_LIST(t):
 def t_MUTABLE_MAP(t):
     r'MutableMap'
     return t
-
 
 def t_GREATER_OR_EQUAL(t):
     r'>='
@@ -127,13 +132,13 @@ def t_IDENTIFIER(t):
     return t
 
 def t_FLOAT(t):
-    r'\d+\.\d+'
+    r'(\s-)?\d+\.\d+'
     t.value=float(t.value)
     return t
 
 # A regular expression rule with some action code
 def t_INTEGER(t):
-    r'\d+'
+    r'(\s-)?\d+'
     t.value = int(t.value)
     return t
 
