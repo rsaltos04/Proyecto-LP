@@ -10,13 +10,9 @@ def p_programa(p):
 def p_sentencia(p):
     '''sentencia : declaration_var 
     | declaration_val
-    | aritmetic_operation
-    | boolean_operation
-    | comparison_operation
     | call_function
     | print_function
     | println_function
-    | mutable_map
     | control_if
     | readline
     | for_loop
@@ -202,18 +198,57 @@ def p_parameters(p):
 
 #Regla definida por Steve Robinson
 def p_return_statements(p):
-    '''return_statements : RETURN
-    | RETURN declaration_options
-    | RETURN IDENTIFIER
-    | RETURN aritmetic_operation
-    | RETURN boolean_operation
-    | RETURN call_function'''
+    '''return_statements : RETURN returnables'''
+
+#Regla definida por Steve Robinson
+def p_not_empty_returnables(p):
+    '''not_empty_returnables : declaration_options
+    | IDENTIFIER
+    | aritmetic_operation
+    | boolean_operation
+    | call_function
+    '''
+
+#Regla definida por Steve Robinson
+def p_returnables(p):
+    '''returnables : not_empty_returnables 
+    | empty
+    '''
 
 #Regla definida por Steve Robinson
 def p_options_function_block(p):
-    '''options_function_block : sentencia 
-    | return_statements
-    | empty'''
+    '''options_function_block : return_statements
+    | control_if_function
+    | for_loop_function
+    | while_loop_function
+    | declaration_var 
+    | declaration_val
+    | call_function
+    | print_function
+    | println_function
+    | readline
+    | function
+    | class'''
+
+#Regla definida por Steve Robinson
+def p_control_if_function(p):
+    '''control_if_function : IF LPAREN control_if_input RPAREN LBRACE statements_function_block RBRACE
+    | IF LPAREN control_if_input RPAREN LBRACE statements_function_block RBRACE ELSE LBRACE statements_function_block RBRACE
+    | IF LPAREN control_if_input RPAREN LBRACE statements_function_block RBRACE control_else_if_function
+    | IF LPAREN control_if_input RPAREN LBRACE statements_function_block RBRACE control_else_if_function ELSE LBRACE statements_function_block RBRACE'''
+
+#Regla definida por Steve Robinson
+def p_control_else_if_function(p):
+    '''control_else_if_function : ELSE IF LPAREN control_if_input RPAREN LBRACE statements_function_block RBRACE
+    | control_else_if_function ELSE IF LPAREN control_if_input RPAREN LBRACE statements_function_block RBRACE'''
+
+#Regla definida por Steve Robinson
+def p_for_loop_function(p):
+    '''for_loop_function : FOR LPAREN for_content RPAREN LBRACE statements_function_block RBRACE'''
+
+#Regla definida por Steve Robinson
+def p_while_loop_function(p):
+    '''while_loop_function : WHILE LPAREN control_if_input RPAREN LBRACE statements_function_block RBRACE'''
 
 #Regla definida por Steve Robinson
 def p_statements_function_block(p):
@@ -228,7 +263,7 @@ def p_class(p):
 def p_class_declaration(p):
     '''class_declaration :  CLASS IDENTIFIER LPAREN parameters RPAREN LBRACE class_statements RBRACE'''
 
-#Regla definida por Steve Robinso
+#Regla definida por Steve Robinson
 def p_class_statements(p):
     '''class_statements :  declaration_var 
     | declaration_val
