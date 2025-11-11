@@ -1,0 +1,9 @@
+--- LOG DE ANÁLISIS SINTÁCTICO ---
+Fecha: 11/11/2025 00:21:22
+Usuario: rsaltos04
+Archivo Analizado: algoritmos/HelloWorld.kt
+----------------------------------------
+
+--- Errores Sintácticos ---
+- Error sintáctico en la línea 3: Token inesperado 'var' (Tipo: VAR)
+- Error sintáctico en la línea 14: Token inesperado '(' (Tipo: LPAREN)

@@ -23,7 +23,8 @@ def p_sentencia(p):
     | for_loop
     | while_loop
     | function
-    | class'''
+    | class
+    | function_lambda'''
 
 #Regla definida por Jefferson Saltos:
 def p_sentencias(p):
@@ -197,6 +198,35 @@ def p_while_loop(p):
 def p_function(p):
     '''function : FUNCTION IDENTIFIER LPAREN parameters RPAREN LBRACE statements_function_block RBRACE'''
 
+#Regla definida por Jefferson Saltos
+def p_function_lambda(p):
+    'function_lambda : declaration_start IDENTIFIER COLON LPAREN function_lambda_type RPAREN MINUS GREATER_THAN IDENTIFIER ASSIGMENT LBRACE parameters MINUS GREATER_THAN statements_function_lambda_block RBRACE'
+
+def p_function_lambda_type(p):
+    '''function_lambda_type : data_types
+    | function_lambda_type COMMA data_types
+    | empty'''
+
+#Regla definida por Steve Robinson
+def p_statements_function_lambda_block(p):
+    '''statements_function_lambda_block :  options_function_lambda_block
+    | statements_function_lambda_block options_function_lambda_block'''
+
+#Regla definida por Jefferson Saltos
+def p_options_function_lambda_block(p):
+    '''options_function_lambda_block : readline
+    | control_if
+    | for_loop
+    | while_loop
+    | declaration_var 
+    | declaration_val
+    | call_function
+    | print_function
+    | println_function
+    | aritmetic_operation
+    | boolean_operation
+    '''
+
 #Regla definida por Steve Robinson
 def p_parameters(p):
     '''parameters :  IDENTIFIER COLON IDENTIFIER
@@ -226,7 +256,8 @@ def p_options_function_block(p):
     | println_function
     | readline
     | function
-    | class'''
+    | class
+    | function_lambda'''
 
 #Regla definida por Steve Robinson
 def p_control_if_function(p):
@@ -261,7 +292,8 @@ def p_class(p):
 def p_class_statement(p):
     '''class_statement :  declaration_var 
     | declaration_val
-    | function'''
+    | function
+    | function_lambda'''
 
 #Regla definida por Steve Robinson
 def p_class_statements(p):
@@ -294,18 +326,33 @@ def p_error(p):
         mensaje = f"Error sintáctico en la línea {p.lineno}: Token inesperado '{p.value}' (Tipo: {p.type})"
     else:
         mensaje = "Error sintáctico: Fin de archivo inesperado (EOF)"
-    
+    print(mensaje)
     syntax_errors_list.append(mensaje)
 
 # Build the parser
 parser = yacc.yacc()
 
-usuario_git = "stikrobinson"
+#val sum : Int   = { x: Int -> x+y}
+"""
+while True:
+   try:
+       s = input('calc > ')
+   except EOFError:
+       break
+   if not s: continue
+   result = parser.parse(s)
+   print(result)
+
+"""
+
+
+
+usuario_git = "rsaltos04"
 ecuador_tz = ZoneInfo("America/Guayaquil")
 ahora = datetime.now(ecuador_tz)
 nombre_archivo = f"sintactico-{usuario_git}-{ahora.strftime('%d-%m-%Y-%Hh%M')}.txt"
 ruta = f"logs/{nombre_archivo}"
-input_file_path = 'algoritmos/ClassTest.kt'
+input_file_path = 'algoritmos/HelloWorld.kt'
 
 os.makedirs(os.path.dirname(ruta), exist_ok=True)
 log_content = []
@@ -350,3 +397,4 @@ try:
 except IOError as io_e:
     print(f"Error CRÍTICO: No se pudo escribir el archivo log en '{ruta}'.")
     print(f"Detalle: {io_e}")
+
