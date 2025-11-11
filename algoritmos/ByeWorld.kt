@@ -9,7 +9,7 @@ fun funcion() {
     if( 1 >= 10+10 && 10 < 10-9 || 9*2 == 10/11 && 10 != 9 || 10<=9 && false || 9>0){
         print("
               hola
-        ");
+        ")
     }
     
     while(hola){
@@ -17,12 +17,12 @@ fun funcion() {
         val mutableList: MutableList<Long> = mutableListOf(12, 10, 20)
         
         for(elemento in mutableList){
-			val myMutableMap<String, Long> = mutableMapOf("one" to 1, "two" to 2)
+			val mapa : MutableMap<String, Long> = mutableMapOf(1, 2)
             print(elemento)
         }
         
-        hola = !hola
-        var bool: Boolean = (hola && hola) || hola
+        var hola : Boolean = !hola
+        var bool: Boolean = hola && hola || hola
        
     }
 }

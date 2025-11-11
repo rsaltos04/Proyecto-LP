@@ -1,0 +1,11 @@
+--- LOG DE ANÁLISIS SINTÁCTICO ---
+Fecha: 10/11/2025 22:19:46
+Usuario: stikrobinson
+Archivo Analizado: algoritmos/ByeWorld.kt
+----------------------------------------
+
+--- Errores Sintácticos ---
+- Error sintáctico en la línea 7: Token inesperado ';' (Tipo: SEMICOLON)
+- Error sintáctico en la línea 15: Token inesperado '<' (Tipo: LESS_THAN)
+- Error sintáctico en la línea 15: Token inesperado 'to' (Tipo: IDENTIFIER)
+- Error sintáctico en la línea 17: Token inesperado '}' (Tipo: RBRACE)

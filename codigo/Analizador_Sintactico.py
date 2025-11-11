@@ -1,5 +1,10 @@
 import ply.yacc as yacc
 from Analizador_Lexico import tokens
+from datetime import datetime
+import os
+from zoneinfo import ZoneInfo
+
+syntax_errors_list = []
 
 #Regla definida por Jefferson Saltos:
 def p_programa(p):
@@ -250,17 +255,33 @@ def p_statements_function_block(p):
 
 #Regla definida por Steve Robinson
 def p_class(p):
-    '''class : class_declaration'''
+    '''class : CLASS IDENTIFIER LPAREN atributes RPAREN class_post_atributes'''
 
 #Regla definida por Steve Robinson
-def p_class_declaration(p):
-    '''class_declaration :  CLASS IDENTIFIER LPAREN parameters RPAREN LBRACE class_statements RBRACE'''
+def p_class_statement(p):
+    '''class_statement :  declaration_var 
+    | declaration_val
+    | function'''
 
 #Regla definida por Steve Robinson
 def p_class_statements(p):
-    '''class_statements :  declaration_var 
-    | declaration_val
-    | function'''
+    """class_statements : class_statement 
+    | class_statements class_statement"""
+
+#Regla definida por Steve Robinson
+def p_class_post_atributes(p):
+    """class_post_atributes : LBRACE class_statements RBRACE
+    | empty"""
+
+#Regla definida por Steve Robinson
+def p_atributes(p):
+    '''atributes : declaration_start IDENTIFIER COLON IDENTIFIER
+    | atributes COMMA declaration_start IDENTIFIER COLON IDENTIFIER
+    | empty'''
+
+def p_declaration_start(p):
+    """declaration_start : VAL
+    | VAR"""
 
 #Regla definida por Jefferson Saltos
 def p_empty(p):
@@ -269,19 +290,63 @@ def p_empty(p):
 
 # Error rule for syntax errors
 def p_error(p):
-    print("Syntax error in input!")
+    if p:
+        mensaje = f"Error sintáctico en la línea {p.lineno}: Token inesperado '{p.value}' (Tipo: {p.type})"
+    else:
+        mensaje = "Error sintáctico: Fin de archivo inesperado (EOF)"
+    
+    syntax_errors_list.append(mensaje)
 
 # Build the parser
 parser = yacc.yacc()
 
-lineas = """fun funcion() {
+usuario_git = "stikrobinson"
+ecuador_tz = ZoneInfo("America/Guayaquil")
+ahora = datetime.now(ecuador_tz)
+nombre_archivo = f"sintactico-{usuario_git}-{ahora.strftime('%d-%m-%Y-%Hh%M')}.txt"
+ruta = f"logs/{nombre_archivo}"
+input_file_path = 'algoritmos/ClassTest.kt'
 
-        var hola: vara = !hola
-        var bool: Boolean = hola && hola || hola
-       
+os.makedirs(os.path.dirname(ruta), exist_ok=True)
+log_content = []
 
-}
-"""
+log_content.append("--- LOG DE ANÁLISIS SINTÁCTICO ---")
+log_content.append(f"Fecha: {ahora.strftime('%d/%m/%Y %H:%M:%S')}")
+log_content.append(f"Usuario: {usuario_git}")
+log_content.append(f"Archivo Analizado: {input_file_path}")
+log_content.append("-" * 40)
 
-result = parser.parse(lineas)
-print(result)
+syntax_errors_list.clear()
+
+try:
+    with open(input_file_path, 'r') as file:
+        all_lines = file.readlines()
+        data = "".join(all_lines)
+    
+    result = parser.parse(data)
+        
+    if syntax_errors_list:
+        log_content.append("\n--- Errores Sintácticos ---")
+        for error in syntax_errors_list:
+            log_content.append(f"- {error}")
+    else:
+        log_content.append(f"No hay errores sintácticos")
+
+except FileNotFoundError:
+    log_content.append("ESTADO: FALLIDO")
+    log_content.append(f"ERROR CRÍTICO: No se pudo encontrar el archivo de entrada en '{input_file_path}'.")
+
+except Exception as e:
+    log_content.append("ESTADO: FALLIDO (Error Inesperado del Script)")
+    log_content.append(f"\n--- Mensaje de Error ---")
+    log_content.append(str(e))
+
+try:
+    with open(ruta, "w", encoding="utf-8") as f:
+        f.write("\n".join(log_content))
+    
+    print(f"Log guardado exitosamente en: {ruta}")
+
+except IOError as io_e:
+    print(f"Error CRÍTICO: No se pudo escribir el archivo log en '{ruta}'.")
+    print(f"Detalle: {io_e}")

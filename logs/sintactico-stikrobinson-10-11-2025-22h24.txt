@@ -1,0 +1,14 @@
+--- LOG DE ANÁLISIS SINTÁCTICO ---
+Fecha: 10/11/2025 22:24:54
+Usuario: stikrobinson
+Archivo Analizado: algoritmos/ClassTest.kt
+----------------------------------------
+
+--- Errores Sintácticos ---
+- Error sintáctico en la línea 15: Token inesperado '(' (Tipo: LPAREN)
+- Error sintáctico en la línea 24: Token inesperado '=' (Tipo: ASSIGMENT)
+- Error sintáctico en la línea 33: Token inesperado '=' (Tipo: ASSIGMENT)
+- Error sintáctico en la línea 58: Token inesperado 'function' (Tipo: IDENTIFIER)
+- Error sintáctico en la línea 58: Token inesperado '{' (Tipo: LBRACE)
+- Error sintáctico en la línea 61: Token inesperado '}' (Tipo: RBRACE)
+- Error sintáctico en la línea 78: Token inesperado '}' (Tipo: RBRACE)
