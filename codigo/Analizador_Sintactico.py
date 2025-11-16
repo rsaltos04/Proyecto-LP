@@ -13,8 +13,7 @@ def p_programa(p):
 
 #Regla definida por Jefferson Saltos:
 def p_sentencia(p):
-    '''sentencia : declaration_var 
-    | declaration_val
+    '''sentencia : declaration
     | call_function
     | print_function
     | println_function
@@ -32,8 +31,10 @@ def p_sentencias(p):
     | sentencia sentencias'''
 
 #Regla definida por Jefferson Saltos:
-def p_declaration_var(p):
-    'declaration_var : VAR IDENTIFIER COLON data_types ASSIGMENT declaration_options'
+def p_declaration(p):
+    'declaration : declaration_start IDENTIFIER COLON data_types ASSIGMENT declaration_options'
+
+
 
 #Regla definida por Jefferson Saltos:
 def p_data_types(p):
@@ -50,9 +51,7 @@ def p_declaration_options(p):
     | boolean_operation
     | call_function '''
 
-#Regla definida por Jefferson Saltos
-def p_declaration_val(p):
-    'declaration_val : VAL IDENTIFIER COLON data_types ASSIGMENT declaration_options'
+
 
 #Regla definida por Jefferson Saltos
 def p_aritmetic_operation(p):
@@ -218,8 +217,7 @@ def p_options_function_lambda_block(p):
     | control_if
     | for_loop
     | while_loop
-    | declaration_var 
-    | declaration_val
+    | declaration
     | call_function
     | print_function
     | println_function
@@ -249,8 +247,7 @@ def p_options_function_block(p):
     | control_if_function
     | for_loop_function
     | while_loop_function
-    | declaration_var 
-    | declaration_val
+    | declaration
     | call_function
     | print_function
     | println_function
@@ -290,8 +287,7 @@ def p_class(p):
 
 #Regla definida por Steve Robinson
 def p_class_statement(p):
-    '''class_statement :  declaration_var 
-    | declaration_val
+    '''class_statement :  declaration
     | function
     | function_lambda'''
 
@@ -332,7 +328,7 @@ def p_error(p):
 # Build the parser
 parser = yacc.yacc()
 
-#val sum : Int   = { x: Int -> x+y}
+#val sum: (Int, Int) -> Int = { x: Int, y: Int -> x + y }
 """
 while True:
    try:

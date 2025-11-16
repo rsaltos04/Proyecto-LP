@@ -1,5 +1,4 @@
 fun main() {
-    val numero : Long
     var nombre : String = "Reynaldo"        
     println("Hola, $nombre !")        
     print("Conteo:")
@@ -11,7 +10,7 @@ fun main() {
           println(" Impar")
         }
     }
-    val sum: (Int, Int) -> Int = { x: Int, y: Int -> x + y }
+    val sum: (Int) -> Int = { x: Int, y: Int -> x }
 }
 // Prueba de Jefferson Saltos
 

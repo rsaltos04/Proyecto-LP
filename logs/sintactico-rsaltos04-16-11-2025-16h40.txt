@@ -1,0 +1,6 @@
+--- LOG DE ANÁLISIS SINTÁCTICO ---
+Fecha: 16/11/2025 16:40:35
+Usuario: rsaltos04
+Archivo Analizado: algoritmos/HelloWorld.kt
+----------------------------------------
+No hay errores sintácticos
