@@ -10,7 +10,7 @@ syntax_errors_list = []
 symbol_table = {
     "variables":{},
     "types":{
-        "String", "Long","Double" , "Boolean"
+        "String", "Long","Double" , "Boolean", "MutableMap", "MutableList"
     }
 
 }
@@ -54,7 +54,6 @@ def p_declaration(p):
     'declaration : declaration_start IDENTIFIER COLON data_types ASSIGMENT declaration_options'
     name=p[2]
     type=p[4]
-    print(p.slice[6].type)
     if name in symbol_table["variables"]:
         print(f"Error Semantico : La siguiente variable {name} ya fue declarada")
     elif p.slice[6].type=="INTEGER" and p[4] != "Long":
@@ -68,10 +67,9 @@ def p_declaration(p):
 
 
     symbol_table["variables"][name]={
-        "type" : type,
-        "value": p[6] #266
+        "type" : type
     }
-    print(symbol_table)
+    # print(symbol_table)
 
 # var paco : String = pepe
 
@@ -82,7 +80,6 @@ def p_data_types(p):
     '''data_types : IDENTIFIER
     | mutable_map
     | mutable_list '''
-    
     if p[1] not in symbol_table["types"]: 
         print(f"Error Semantico : El tipo de dato {p[1]} no existe") 
     else:
@@ -105,9 +102,9 @@ def p_declaration_options(p):
     | aritmetic_operation
     | boolean_variable
     | boolean_operation
-    | call_function '''
+    | call_function 
+    | readline'''
     p.slice[0].type=p.slice[1].type
-    p[0]=p[1]
 
 
 def p_variable_assigment(p):
@@ -115,7 +112,7 @@ def p_variable_assigment(p):
 
     name=p[1]
     
-    print(p.slice[3].type)
+    # print(p.slice[3].type)
     #{'Boolean', 'Long', 'String', 'Double'}}
 
     if name not in symbol_table["variables"]:
@@ -129,43 +126,25 @@ def p_variable_assigment(p):
     elif p.slice[3].type=="STRING" and symbol_table["variables"][p[1]]["type"] != "String":
         print(f"Error Semantico : La variable {name} y su declaracion difiere en el tipo de dato ")
 
-    symbol_table["variables"][name]["value"]=p[3]
-    print(symbol_table)
+    # print(symbol_table)
 
 #Regla definida por Jefferson Saltos
 def p_aritmetic_operation(p):
     '''aritmetic_operation : number_variable operator number_variable
     | aritmetic_operation operator number_variable '''
-    
-    if p[2]=="-":
-        p[0] = p[1] - p[3]
-        p.slice[0].type=p.slice[1].type
-    elif p[2] == "+":
-        p[0] = p[1] + p[3]
-        p.slice[0].type=p.slice[1].type
-    elif p[2] =="*":
-        p[0] = p[1] * p[3]
-        p.slice[0].type=p.slice[1].type
-    elif p[2]=="/":
-        p[0] = p[1] / p[3]
-        p.slice[0].type=p.slice[1].type
-    elif p[2] == "%":
-        p[0]=p[1] % p[3]
-        p.slice[0].type=p.slice[1].type
+    p.slice[0].type = p.slice[1].type
 
 #Regla definida por Jefferson Saltos
 def p_number(p):
     '''number : INTEGER
     | FLOAT'''
-    p[0]=p[1]
     p.slice[0].type=p.slice[1].type
 
 #Regla definida por Steve Robinson
 def p_number_variable(p):
     '''number_variable : INTEGER
     | FLOAT
-    | identifier_number   '''
-    p[0] = p[1]
+    | identifier_number   '''    
     p.slice[0].type=p.slice[1].type
     
 
@@ -174,7 +153,6 @@ def p_identifier_number(p):
     if p[1] not in symbol_table["variables"]:
         print(f"Error Semantico: La variable {p[1]} no existe")
     else :
-        p[0] = symbol_table["variables"][p[1]]["value"]
         p.slice[0].type= types[symbol_table["variables"][p[1]]["type"]] #"Long"
 
 #Regla definida por Jefferson Saltos
@@ -191,13 +169,7 @@ def p_operator(p):
 def p_boolean_operation(p):
     '''boolean_operation : boolean_variable logical_operator boolean_variable
     | boolean_operation logical_operator boolean_variable'''
-    if p[2]=="&&":
-        p[0] = p[1] and p[3]
-        p.slice[0].type=p.slice[1].type
-        print(p[0])
-    elif p[2] == "||":
-        p[0] = p[1] or p[3]
-        p.slice[0].type=p.slice[1].type
+    p.slice[0].type=p.slice[1].type
     
 
 #Regla definida por Jefferson Saltos
@@ -205,7 +177,6 @@ def p_logical_operator(p):
     '''logical_operator : AND
     | OR
     '''
-    p[0]=p[1]
     p.slice[0].type=p.slice[1].type
 
 #Regla definida por Jefferson Saltos
@@ -214,19 +185,11 @@ def p_boolean_variable(p):
     | BOOLEAN
     | comparison_operation
     | boolean_variable_not'''
-    if p[1]=="true" or p[1]==True:
-        p[0]=True
-    elif p[1]=="false" or p[1]==False:
-        p[0]=False
     p.slice[0].type=p.slice[1].type
     
 
 def p_boolean_variable_not(p):
     '''boolean_variable_not : NOT boolean_variable'''
-    if p[2]=="true" or p[2]==True:
-        p[0]=False
-    elif p[2]=="false" or p[2]==False:
-        p[0]=True
     p.slice[0].type=p.slice[2].type
 
 
@@ -234,31 +197,12 @@ def p_identifier_boolean(p):
     ''' identifier_boolean : IDENTIFIER'''
     if p[1] not in symbol_table["variables"]:
         print(f"Error Semantico: La variable {p[1]} no existe")
-    p[0] = symbol_table["variables"][p[1]]["value"]
     p.slice[0].type= types[symbol_table["variables"][p[1]]["type"]] 
 
 #Regla definida por Jefferson Saltos
 def p_comparison_operation(p):
     '''comparison_operation : comparison_variable comparison_operator comparison_variable '''
-    if p[2]==">":
-        p[0] = p[1] > p[3]
-        p.slice[0].type="Boolean"
-    elif p[2] == "<":
-        p[0] = p[1] < p[3]
-        p.slice[0].type="Boolean"
-    elif p[2] =="==":
-        p[0] = p[1] == p[3]
-        p.slice[0].type="Boolean"
-    elif p[2]==">=":
-        p[0] = p[1] >= p[3]
-        p.slice[0].type="Boolean"
-    elif p[2] == "<=":
-        p[0]=p[1] <= p[3]
-        p.slice[0].type="Boolean"
-    elif p[2] == ">=":
-        p[0]=p[1] >= p[3]
-        p.slice[0].type="Boolean"
-        
+    p.slice[0].type="Boolean"
 
 #Regla definida por Jefferson Saltos
 def p_comparison_variable(p):
@@ -266,7 +210,6 @@ def p_comparison_variable(p):
     | number
     | STRING
     | aritmetic_operation'''
-    p[0]=p[1]
     p.slice[0].type=p.slice[1].type
 
 
@@ -274,7 +217,6 @@ def p_identifier_comparison(p):
     ''' identifier_comparison : IDENTIFIER'''
     if p[1] not in symbol_table["variables"]:
         print(f"Error Semantico: La variable {p[1]} no existe")
-    p[0] = symbol_table["variables"][p[1]]["value"]
     p.slice[0].type= types[symbol_table["variables"][p[1]]["type"]] 
     
 
@@ -285,10 +227,16 @@ def p_comparison_operator(p):
     | GREATER_OR_EQUAL
     | LESS_OR_EQUAL
     | EQUALS_TO
-    | NOT_EQUALS'''
-    p[0]=p[1]
-    
+    | NOT_EQUALS'''    
 
+#Regla definida por Jefferson Saltos
+def p_print_function(p):
+    'print_function : PRINT LPAREN function_input RPAREN'
+    print("argumentos", len(p[3]))
+
+#Regla definida por Jefferson Saltos
+def p_println_function(p):
+    'println_function : PRINTLN LPAREN function_input RPAREN'
 
 #Regla definida por Jefferson Saltos
 def p_call_function(p):
@@ -298,6 +246,7 @@ def p_call_function(p):
 def p_function_input(p):
     '''function_input : function_input_options
     | function_input COMMA function_input_options'''
+
 
 #Regla definida por Jefferson Saltos
 def p_function_input_options(p):
@@ -309,20 +258,15 @@ def p_function_input_options(p):
     '''
 
 #Regla definida por Jefferson Saltos
-def p_print_function(p):
-    'print_function : PRINT LPAREN function_input RPAREN'
-
-#Regla definida por Jefferson Saltos
-def p_println_function(p):
-    'println_function : PRINTLN LPAREN function_input RPAREN'
-
-#Regla definida por Jefferson Saltos
 def p_mutable_map(p):
     'mutable_map : MUTABLE_MAP LESS_THAN generic COMMA generic GREATER_THAN'
+    p[0] = "MutableMap"
 
 #Regla definida por Steve Robinson
 def p_mutable_list(p):
     'mutable_list : MUTABLE_LIST LESS_THAN generic GREATER_THAN'
+    p[0] = "MutableList"
+
 
 #Regla definida por Jefferson Saltos
 def p_generic(p):
@@ -351,7 +295,8 @@ def p_control_else_if(p):
 
 #Regla definida por Jefferson Saltos
 def p_control_if_input(p):
-    '''control_if_input : boolean_operation'''
+    '''control_if_input : boolean_operation
+    | boolean_variable'''
 
 #Regla definida por Steve Robinson
 def p_readline(p):
@@ -416,8 +361,7 @@ def p_return_statements(p):
 #Regla definida por Steve Robinson
 def p_returnables(p):
     '''returnables : declaration_options 
-    | empty
-    '''
+    | empty'''
 
 #Regla definida por Steve Robinson
 def p_options_function_block(p):
@@ -527,7 +471,7 @@ ecuador_tz = ZoneInfo("America/Guayaquil")
 ahora = datetime.now(ecuador_tz)
 nombre_archivo = f"sintactico-{usuario_git}-{ahora.strftime('%d-%m-%Y-%Hh%M')}.txt"
 ruta = f"logs/{nombre_archivo}"
-input_file_path = 'algoritmos/HelloWorld.kt'
+input_file_path = 'algoritmos/ClassTest.kt'
 
 os.makedirs(os.path.dirname(ruta), exist_ok=True)
 log_content = []
@@ -544,29 +488,22 @@ try:
     with open(input_file_path, 'r') as file:
         all_lines = file.readlines()
         data = "".join(all_lines)
-    
-    result = parser.parse(data)
         
+    result = parser.parse(data)
+            
     if syntax_errors_list:
         log_content.append("\n--- Errores Sintácticos ---")
         for error in syntax_errors_list:
             log_content.append(f"- {error}")
     else:
         log_content.append(f"No hay errores sintácticos")
-
 except FileNotFoundError:
     log_content.append("ESTADO: FALLIDO")
     log_content.append(f"ERROR CRÍTICO: No se pudo encontrar el archivo de entrada en '{input_file_path}'.")
-
-"""
 except Exception as e:
     log_content.append("ESTADO: FALLIDO (Error Inesperado del Script)")
     log_content.append(f"\n--- Mensaje de Error ---")
     log_content.append(str(e))
-"""
-    
-
-
 
 try:
     with open(ruta, "w", encoding="utf-8") as f:
@@ -578,3 +515,4 @@ except IOError as io_e:
     print(f"Error CRÍTICO: No se pudo escribir el archivo log en '{ruta}'.")
     print(f"Detalle: {io_e}")
 
+print(symbol_table)

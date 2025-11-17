@@ -1,52 +1,17 @@
-class Coche(val marca: String, var color: String) {
-    
-    val marca: String = "Toyota"
-    var color: String = "Rojo"
+val PI: Double = 3.14159
+var contador: Long = 0
+var mensaje: String = "Inicializando..."
 
-    // Método
-    fun arrancar() {
-        println("El coche $marca de color $color está arrancando...")
-    }
+var x: Long = 10 + 5 * 2
+var y: Long = x / 3
+var z: Long = 10 % 3
 
-    val PI: Float = 3.14159
-    var contador: Int = 0
-    var mensaje: String = "Inicializando..."
-
-    var x: Int = 10 + 5 * 2
-    var y: Int = x / 3
-    var z: Int = 10 % 3
-
-    var estaListo: Boolean = true
-    var puedeProcesar: Boolean = x > 10 && ! estaListo || y == 3
-
-    fun sumarNumeros(a: Int, b: Int) {
-        var resultado: Int = a + b
-        return resultado
-    }
-}
-
-var suma: Int = sumarNumeros(x, y)
-println(suma)
-
-print("Test print")
-println() // Prueba
-
-// Definición de clase
-class Usuario(val username: String, var nivel: Int) {
-    
-    // Propiedades dentro de la clase
-    var estaActivo: Boolean = true
-    
-    // Método dentro de la clase
-    fun promover() {
-        var nivel : Int = nivel + 1
-        println("¡Promovido!")
-    }
-}
+var estaListo: Boolean = true
+var puedeProcesar: Boolean = x > 10 && !estaListo || y == 3
 
 if (puedeProcesar) {
     println("Procesando...")
-    var contador: Int = contador + 1
+    contador = contador + 1
 } else if (y == 3) {
     println("Esperando...")
 } else {
@@ -55,17 +20,40 @@ if (puedeProcesar) {
 
 while (contador < 5) {
     print(contador)
-    var contador: Int = contador + 1
+    contador = contador + 1
 }
 
 for (i in 0 .. 10) {
     println(i)
 }
 
+fun sumarNumeros(a: Long, b: Long) {
+    var resultado: Long = a + b
+    return resultado
+}
+
+var suma: Long = sumarNumeros(x, y)
+println(suma)
+
+print("Test print")
+println() 
+
+class Usuario(val username: String, var nivel: Long) {
+    
+    // Propiedades dentro de la clase
+    var estaActivo: Boolean = true
+    
+    // Método dentro de la clase
+    fun promover() {
+        nivel = nivel + 1
+        println("¡Promovido!")
+    }
+}
+
 var admin: Usuario = Usuario("admin_user", 99)
 
 var listaUsuarios: MutableList<Usuario> = obtenerUsuarios()
-var puntajes: MutableMap<String, Int> = obtenerPuntajes()
+var puntajes: MutableMap<String, Long> = obtenerPuntajes()
 
 for (usuario in listaUsuarios) {
     println(usuario) // Asume que 'usuario' se puede imprimir
@@ -75,3 +63,6 @@ println("Ingresa tu nombre:")
 var nombre: String = readln()
 println("Hola, ")
 println(nombre)
+print("Hola")
+print()
+print("Hola", "chao")

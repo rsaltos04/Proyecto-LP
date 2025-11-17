@@ -16,6 +16,9 @@ reserved = {
    'return' : 'RETURN',
    'class' : 'CLASS',
    'to' : "TO",
+    "print": "PRINT",
+   "println": "PRINTLN",
+   "readln": "READLN",
 }
 
 # List of token names.   This is always required
@@ -52,9 +55,6 @@ tokens = (
    "NOT_EQUALS",
    "RANGE",
    "COMMA",
-   "PRINT",
-   "PRINTLN",
-   "READLN",
 ) + tuple(reserved.values())
 
 # Regular expression rules for simple tokens
@@ -141,18 +141,6 @@ def t_FLOAT(t):
 def t_INTEGER(t):
     r'\d+'
     t.value = int(t.value)
-    return t
-
-def t_PRINT(t):
-    r'print'
-    return t
-
-def t_PRINTLN(t):
-    r'println'
-    return t
-
-def t_READLN(t):
-    r'readln'
     return t
 
 # Define a rule so we can track line numbers
