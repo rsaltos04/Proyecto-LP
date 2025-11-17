@@ -1,5 +1,15 @@
 fun main() {
-    var nombre : String = "Reynaldo"        
+    var nombre : Long = 3  
+    var pepe : Long = 273
+    var prueba : Long = nombre + pepe   
+
+    var luis : Boolean = true
+    var paco : Boolean = true && !true
+
+    var mr_robot : Boolean = 23 == 22
+    luis = false
+    paco = 7923173
+
     println("Hola, $nombre !")        
     print("Conteo:")
     for (i in 0..10) {           
@@ -12,5 +22,9 @@ fun main() {
     }
     val sum: (Int) -> Int = { x: Int, y: Int -> x }
 }
+
+paco = a && pepe
+
+
 // Prueba de Jefferson Saltos
 

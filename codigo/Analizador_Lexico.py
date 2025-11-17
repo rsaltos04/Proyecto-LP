@@ -15,6 +15,7 @@ reserved = {
    'in' : 'IN',
    'return' : 'RETURN',
    'class' : 'CLASS',
+   'to' : "TO",
 }
 
 # List of token names.   This is always required
@@ -128,6 +129,7 @@ def t_STRING(t):
 def t_IDENTIFIER(t):
     r'[A-Za-z_][\w]*'
     t.type= reserved.get(t.value,"IDENTIFIER")
+
     return t
 
 def t_FLOAT(t):

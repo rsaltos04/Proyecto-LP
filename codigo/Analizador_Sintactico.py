@@ -6,6 +6,24 @@ from zoneinfo import ZoneInfo
 
 syntax_errors_list = []
 
+#Tabla de simbolos
+symbol_table = {
+    "variables":{},
+    "types":{
+        "String", "Long","Double" , "Boolean"
+    }
+
+}
+
+types={
+    "Long": "INTEGER",
+    "Double": "FLOAT",
+    "Boolean": "BOOLEAN",
+    "String" : "STRING",
+}
+
+
+
 #Regla definida por Jefferson Saltos:
 def p_programa(p):
     '''programa : sentencia
@@ -23,7 +41,8 @@ def p_sentencia(p):
     | while_loop
     | function
     | class
-    | function_lambda'''
+    | function_lambda
+    | variable_assigment'''
 
 #Regla definida por Jefferson Saltos:
 def p_sentencias(p):
@@ -33,6 +52,28 @@ def p_sentencias(p):
 #Regla definida por Jefferson Saltos:
 def p_declaration(p):
     'declaration : declaration_start IDENTIFIER COLON data_types ASSIGMENT declaration_options'
+    name=p[2]
+    type=p[4]
+    print(p.slice[6].type)
+    if name in symbol_table["variables"]:
+        print(f"Error Semantico : La siguiente variable {name} ya fue declarada")
+    elif p.slice[6].type=="INTEGER" and p[4] != "Long":
+        print(f"Error Semantico : La variable {name} y su declaracion difiere en el tipo de dato ")
+    elif p.slice[6].type=="FLOAT" and p[4] != "Double":
+        print(f"Error Semantico : La variable {name} y su declaracion difiere en el tipo de dato ")
+    elif p.slice[6].type=="BOOLEAN" and p[4] != "Boolean":
+        print(f"Error Semantico : La variable {name} y su declaracion difiere en el tipo de dato ")
+    elif p.slice[6].type=="STRING" and p[4] != "String":
+        print(f"Error Semantico : La variable {name} y su declaracion difiere en el tipo de dato ")
+
+
+    symbol_table["variables"][name]={
+        "type" : type,
+        "value": p[6] #266
+    }
+    print(symbol_table)
+
+# var paco : String = pepe
 
 
 
@@ -41,33 +82,100 @@ def p_data_types(p):
     '''data_types : IDENTIFIER
     | mutable_map
     | mutable_list '''
+    
+    if p[1] not in symbol_table["types"]: 
+        print(f"Error Semantico : El tipo de dato {p[1]} no existe") 
+    else:
+        p[0]=p[1]
 
-#Regla definida por Jefferson Saltos:
+
+
+def p_map_inputs(p):
+    '''map_inputs : INTEGER
+    | FLOAT
+    | STRING
+    | call_function
+    '''
+
+#Regla definida por Jefferson Saltos: 
 def p_declaration_options(p):
     '''declaration_options :  INTEGER
     | FLOAT
     | STRING
     | aritmetic_operation
+    | boolean_variable
     | boolean_operation
     | call_function '''
+    p.slice[0].type=p.slice[1].type
+    p[0]=p[1]
 
 
+def p_variable_assigment(p):
+    ''' variable_assigment : IDENTIFIER ASSIGMENT declaration_options'''
+
+    name=p[1]
+    
+    print(p.slice[3].type)
+    #{'Boolean', 'Long', 'String', 'Double'}}
+
+    if name not in symbol_table["variables"]:
+        print(f"Error Semantico : La siguiente variable {name} no ha sido declarada")
+    elif p.slice[3].type=="INTEGER" and symbol_table["variables"][p[1]]["type"] != "Long":
+        print(f"Error Semantico : La variable {name} y su declaracion difiere en el tipo de dato ")
+    elif p.slice[3].type=="FLOAT" and symbol_table["variables"][p[1]]["type"] != "Double":
+        print(f"Error Semantico : La variable {name} y su declaracion difiere en el tipo de dato ")
+    elif p.slice[3].type=="BOOLEAN" and symbol_table["variables"][p[1]]["type"] != "Boolean":
+        print(f"Error Semantico : La variable {name} y su declaracion difiere en el tipo de dato ")
+    elif p.slice[3].type=="STRING" and symbol_table["variables"][p[1]]["type"] != "String":
+        print(f"Error Semantico : La variable {name} y su declaracion difiere en el tipo de dato ")
+
+    symbol_table["variables"][name]["value"]=p[3]
+    print(symbol_table)
 
 #Regla definida por Jefferson Saltos
 def p_aritmetic_operation(p):
     '''aritmetic_operation : number_variable operator number_variable
     | aritmetic_operation operator number_variable '''
+    
+    if p[2]=="-":
+        p[0] = p[1] - p[3]
+        p.slice[0].type=p.slice[1].type
+    elif p[2] == "+":
+        p[0] = p[1] + p[3]
+        p.slice[0].type=p.slice[1].type
+    elif p[2] =="*":
+        p[0] = p[1] * p[3]
+        p.slice[0].type=p.slice[1].type
+    elif p[2]=="/":
+        p[0] = p[1] / p[3]
+        p.slice[0].type=p.slice[1].type
+    elif p[2] == "%":
+        p[0]=p[1] % p[3]
+        p.slice[0].type=p.slice[1].type
 
 #Regla definida por Jefferson Saltos
 def p_number(p):
     '''number : INTEGER
     | FLOAT'''
+    p[0]=p[1]
+    p.slice[0].type=p.slice[1].type
 
 #Regla definida por Steve Robinson
 def p_number_variable(p):
     '''number_variable : INTEGER
     | FLOAT
-    | IDENTIFIER   '''
+    | identifier_number   '''
+    p[0] = p[1]
+    p.slice[0].type=p.slice[1].type
+    
+
+def p_identifier_number(p):
+    ''' identifier_number : IDENTIFIER'''
+    if p[1] not in symbol_table["variables"]:
+        print(f"Error Semantico: La variable {p[1]} no existe")
+    else :
+        p[0] = symbol_table["variables"][p[1]]["value"]
+        p.slice[0].type= types[symbol_table["variables"][p[1]]["type"]] #"Long"
 
 #Regla definida por Jefferson Saltos
 def p_operator(p):
@@ -76,37 +184,99 @@ def p_operator(p):
     | TIMES
     | DIVIDE
     | MOD'''
+    p[0]=p[1]
 
 
 #Regla definida por Jefferson Saltos
 def p_boolean_operation(p):
     '''boolean_operation : boolean_variable logical_operator boolean_variable
-    | boolean_operation logical_operator boolean_variable
-    | boolean_variable'''
+    | boolean_operation logical_operator boolean_variable'''
+    if p[2]=="&&":
+        p[0] = p[1] and p[3]
+        p.slice[0].type=p.slice[1].type
+        print(p[0])
+    elif p[2] == "||":
+        p[0] = p[1] or p[3]
+        p.slice[0].type=p.slice[1].type
+    
 
 #Regla definida por Jefferson Saltos
 def p_logical_operator(p):
     '''logical_operator : AND
     | OR
     '''
+    p[0]=p[1]
+    p.slice[0].type=p.slice[1].type
 
 #Regla definida por Jefferson Saltos
 def p_boolean_variable(p):
-    '''boolean_variable : IDENTIFIER
+    '''boolean_variable : identifier_boolean
     | BOOLEAN
     | comparison_operation
-    | NOT boolean_variable'''
+    | boolean_variable_not'''
+    if p[1]=="true" or p[1]==True:
+        p[0]=True
+    elif p[1]=="false" or p[1]==False:
+        p[0]=False
+    p.slice[0].type=p.slice[1].type
+    
+
+def p_boolean_variable_not(p):
+    '''boolean_variable_not : NOT boolean_variable'''
+    if p[2]=="true" or p[2]==True:
+        p[0]=False
+    elif p[2]=="false" or p[2]==False:
+        p[0]=True
+    p.slice[0].type=p.slice[2].type
+
+
+def p_identifier_boolean(p):
+    ''' identifier_boolean : IDENTIFIER'''
+    if p[1] not in symbol_table["variables"]:
+        print(f"Error Semantico: La variable {p[1]} no existe")
+    p[0] = symbol_table["variables"][p[1]]["value"]
+    p.slice[0].type= types[symbol_table["variables"][p[1]]["type"]] 
 
 #Regla definida por Jefferson Saltos
 def p_comparison_operation(p):
     '''comparison_operation : comparison_variable comparison_operator comparison_variable '''
+    if p[2]==">":
+        p[0] = p[1] > p[3]
+        p.slice[0].type="Boolean"
+    elif p[2] == "<":
+        p[0] = p[1] < p[3]
+        p.slice[0].type="Boolean"
+    elif p[2] =="==":
+        p[0] = p[1] == p[3]
+        p.slice[0].type="Boolean"
+    elif p[2]==">=":
+        p[0] = p[1] >= p[3]
+        p.slice[0].type="Boolean"
+    elif p[2] == "<=":
+        p[0]=p[1] <= p[3]
+        p.slice[0].type="Boolean"
+    elif p[2] == ">=":
+        p[0]=p[1] >= p[3]
+        p.slice[0].type="Boolean"
+        
 
 #Regla definida por Jefferson Saltos
 def p_comparison_variable(p):
-    '''comparison_variable : IDENTIFIER
+    '''comparison_variable : identifier_comparison
     | number
     | STRING
     | aritmetic_operation'''
+    p[0]=p[1]
+    p.slice[0].type=p.slice[1].type
+
+
+def p_identifier_comparison(p):
+    ''' identifier_comparison : IDENTIFIER'''
+    if p[1] not in symbol_table["variables"]:
+        print(f"Error Semantico: La variable {p[1]} no existe")
+    p[0] = symbol_table["variables"][p[1]]["value"]
+    p.slice[0].type= types[symbol_table["variables"][p[1]]["type"]] 
+    
 
 #Regla definida por Jefferson Saltos
 def p_comparison_operator(p):
@@ -116,6 +286,8 @@ def p_comparison_operator(p):
     | LESS_OR_EQUAL
     | EQUALS_TO
     | NOT_EQUALS'''
+    p[0]=p[1]
+    
 
 
 #Regla definida por Jefferson Saltos
@@ -133,6 +305,7 @@ def p_function_input_options(p):
     | IDENTIFIER
     | STRING
     | empty
+    | mutable_map_parameter
     '''
 
 #Regla definida por Jefferson Saltos
@@ -154,6 +327,10 @@ def p_mutable_list(p):
 #Regla definida por Jefferson Saltos
 def p_generic(p):
     '''generic : data_types'''
+
+#Regla definida por Jefferson Saltos
+def p_mutable_map_parameter(p):
+    '''mutable_map_parameter : map_inputs TO map_inputs COMMA map_inputs TO map_inputs'''
 
 #Regla definida por Jefferson Saltos
 def p_control_if(p):
@@ -223,6 +400,7 @@ def p_options_function_lambda_block(p):
     | println_function
     | aritmetic_operation
     | boolean_operation
+    | variable_assigment
     '''
 
 #Regla definida por Steve Robinson
@@ -254,7 +432,8 @@ def p_options_function_block(p):
     | readline
     | function
     | class
-    | function_lambda'''
+    | function_lambda
+    | variable_assigment'''
 
 #Regla definida por Steve Robinson
 def p_control_if_function(p):
@@ -379,10 +558,15 @@ except FileNotFoundError:
     log_content.append("ESTADO: FALLIDO")
     log_content.append(f"ERROR CRÍTICO: No se pudo encontrar el archivo de entrada en '{input_file_path}'.")
 
+"""
 except Exception as e:
     log_content.append("ESTADO: FALLIDO (Error Inesperado del Script)")
     log_content.append(f"\n--- Mensaje de Error ---")
     log_content.append(str(e))
+"""
+    
+
+
 
 try:
     with open(ruta, "w", encoding="utf-8") as f:
