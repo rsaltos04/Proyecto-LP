@@ -1,0 +1,21 @@
+--- LOG DE ANÁLISIS SEMÁNTICO ---
+Fecha: 17/11/2025 23:41:53
+Usuario: stikrobinson
+Archivo Analizado: algoritmos/SemanticTest.kt
+----------------------------------------
+
+--- Errores Semántico ---
+- Error Semantico : Long no es iterable
+- Error Semantico : La siguiente variable variableLong ya fue declarada
+- Error Semantico : El tipo de dato Int no existe
+- Error Semantico : La variable tipoMalo y su declaracion difiere en el tipo de dato 
+- Error Semantico : La variable errorTipo1 y su declaracion difiere en el tipo de dato 
+- Error Semantico : La variable errorTipo2 y su declaracion difiere en el tipo de dato 
+- Error Semantico : La variable errorTipo3 y su declaracion difiere en el tipo de dato 
+- Error Semantico : La variable errorTipo4 y su declaracion difiere en el tipo de dato 
+- Error Semantico : La siguiente variable variableInexistente no ha sido declarada
+- Error Semantico : La variable variableString y su declaracion difiere en el tipo de dato 
+- Error Semantico: La variable variableK no existe
+- Error Semantico : La variable y y su declaracion difiere en el tipo de dato 
+- Error Semantico: La funcion print tiene número erroneo de argumentos
+- Error Semantico: La funcion println tiene número erroneo de argumentos
