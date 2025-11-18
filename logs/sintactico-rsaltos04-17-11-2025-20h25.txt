@@ -1,0 +1,6 @@
+--- LOG DE ANÁLISIS SINTÁCTICO ---
+Fecha: 17/11/2025 20:25:58
+Usuario: rsaltos04
+Archivo Analizado: algoritmos/ClassTest.kt
+----------------------------------------
+No hay errores sintácticos

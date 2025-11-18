@@ -54,6 +54,7 @@ var admin: Usuario = Usuario("admin_user", 99)
 
 var listaUsuarios: MutableList<Usuario> = obtenerUsuarios()
 var puntajes: MutableMap<String, Long> = obtenerPuntajes()
+var numero : Long = 10
 
 for (usuario in listaUsuarios) {
     println(usuario) // Asume que 'usuario' se puede imprimir
@@ -61,8 +62,7 @@ for (usuario in listaUsuarios) {
 
 println("Ingresa tu nombre:")
 var nombre: String = readln()
-println("Hola, ")
+println("Hola, ", "chao")
 println(nombre)
-print("Hola")
-print()
+print(a)
 print("Hola", "chao")

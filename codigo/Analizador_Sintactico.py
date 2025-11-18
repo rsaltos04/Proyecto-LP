@@ -232,11 +232,15 @@ def p_comparison_operator(p):
 #Regla definida por Jefferson Saltos
 def p_print_function(p):
     'print_function : PRINT LPAREN function_input RPAREN'
-    print("argumentos", len(p[3]))
+    if p[3] not in [0, 1]:
+        print("Error Semantico: La funcion print tiene número erroneo de argumentos")
+
 
 #Regla definida por Jefferson Saltos
 def p_println_function(p):
     'println_function : PRINTLN LPAREN function_input RPAREN'
+    if p[3] not in [0, 1]:
+        print("Error Semantico: La funcion println tiene número erroneo de argumentos")
 
 #Regla definida por Jefferson Saltos
 def p_call_function(p):
@@ -245,8 +249,12 @@ def p_call_function(p):
 #Regla definida por Jefferson Saltos
 def p_function_input(p):
     '''function_input : function_input_options
-    | function_input COMMA function_input_options'''
+    | production_function_input'''
+    p[0] = p[1]
 
+def p_production_function_input(p):
+    '''production_function_input : function_input COMMA function_input_options '''
+    p[0] = p[1] + p[3]
 
 #Regla definida por Jefferson Saltos
 def p_function_input_options(p):
@@ -256,6 +264,10 @@ def p_function_input_options(p):
     | empty
     | mutable_map_parameter
     '''
+    if p[1] is None:
+        p[0] = 0
+    else:
+        p[0] = 1
 
 #Regla definida por Jefferson Saltos
 def p_mutable_map(p):
@@ -308,8 +320,17 @@ def p_for_loop(p):
 
 #Regla definida por Steve Robinson
 def p_for_content(p):
-    '''for_content : IDENTIFIER IN INTEGER RANGE INTEGER
-    | IDENTIFIER IN IDENTIFIER'''
+    '''for_content : for_range
+    | for_iterable '''
+
+def p_for_iterable(p):
+    '''for_iterable : IDENTIFIER IN IDENTIFIER'''
+    tipo = symbol_table["variables"][p[3]]["type"]
+    if tipo not in ["String", "MutableList", "MutableMap"]:
+        print(f"{tipo} no es iterable")
+
+def p_for_range(p):
+    ''' for_range : IDENTIFIER IN INTEGER RANGE INTEGER '''
 
 #Regla definida por Steve Robinson
 def p_while_loop(p):
