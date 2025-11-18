@@ -1,0 +1,5 @@
+--- LOG DE ANÁLISIS SEMÁNTICO ---
+Fecha: 18/11/2025 00:08:59
+Usuario: rsaltos04
+Archivo Analizado: algoritmos/HelloWorld.kt
+----------------------------------------
