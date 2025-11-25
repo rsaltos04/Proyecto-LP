@@ -53,23 +53,25 @@ def p_sentencias(p):
 #Regla definida por Jefferson Saltos:
 def p_declaration(p):
     'declaration : declaration_start IDENTIFIER COLON data_types ASSIGMENT declaration_options'
+    declaration=p[1]
     name=p[2]
     type=p[4]
     if name in symbol_table["variables"]:
         print(f"Error Semantico : La siguiente variable {name} ya fue declarada")
-        semantic_errors_list.append(f"Error Semantico : La siguiente variable {name} ya fue declarada")
+        semantic_errors_list.append(f"Error Semantico : La siguiente variable {name} ya fue declarada. En la linea : {p.lineno(2)}")
     elif p.slice[6].type=="INTEGER" and p[4] != "Long":
         print(f"Error Semantico : La variable {name} y su declaracion difiere en el tipo de dato ")
-        semantic_errors_list.append(f"Error Semantico : La variable {name} y su declaracion difiere en el tipo de dato ")
+        semantic_errors_list.append(f"Error Semantico : La variable {name} y su declaracion difiere en el tipo de dato. En la linea : {p.lineno(2)} ")
     elif p.slice[6].type=="FLOAT" and p[4] != "Double":
-        semantic_errors_list.append(f"Error Semantico : La variable {name} y su declaracion difiere en el tipo de dato ")
+        semantic_errors_list.append(f"Error Semantico : La variable {name} y su declaracion difiere en el tipo de dato. En la linea : {p.lineno(2)} ")
     elif p.slice[6].type=="BOOLEAN" and p[4] != "Boolean":
-        semantic_errors_list.append(f"Error Semantico : La variable {name} y su declaracion difiere en el tipo de dato ")
+        semantic_errors_list.append(f"Error Semantico : La variable {name} y su declaracion difiere en el tipo de dato. En la linea : {p.lineno(2)} ")
     elif p.slice[6].type=="STRING" and p[4] != "String":
-        semantic_errors_list.append(f"Error Semantico : La variable {name} y su declaracion difiere en el tipo de dato ")
+        semantic_errors_list.append(f"Error Semantico : La variable {name} y su declaracion difiere en el tipo de dato. En la linea : {p.lineno(2)} ")
 
     symbol_table["variables"][name]={
-        "type" : type
+        "type" : type , 
+        "declaration" : declaration
     }
     # print(symbol_table)
 
@@ -84,7 +86,7 @@ def p_data_types(p):
     | mutable_list '''
     if p[1] not in symbol_table["types"]: 
         print(f"Error Semantico : El tipo de dato {p[1]} no existe") 
-        semantic_errors_list.append(f"Error Semantico : El tipo de dato {p[1]} no existe")
+        semantic_errors_list.append(f"Error Semantico : El tipo de dato {p[1]} no existe. En la linea : {p.lineno(1)}")
     else:
         p[0]=p[1]
 
@@ -116,22 +118,27 @@ def p_variable_assigment(p):
     # print(p.slice[3].type)
     #{'Boolean', 'Long', 'String', 'Double'}}
 
+
+
     if name not in symbol_table["variables"]:
         print(f"Error Semantico : La siguiente variable {name} no ha sido declarada")
-        semantic_errors_list.append(f"Error Semantico : La siguiente variable {name} no ha sido declarada")
+        semantic_errors_list.append(f"Error Semantico : La siguiente variable {name} no ha sido declarada. En la linea : {p.lineno(1)}")
     elif p.slice[3].type=="INTEGER" and symbol_table["variables"][p[1]]["type"] != "Long":
         print(f"Error Semantico : La variable {name} y su declaracion difiere en el tipo de dato ")
-        semantic_errors_list.append(f"Error Semantico : La variable {name} y su declaracion difiere en el tipo de dato ")
+        semantic_errors_list.append(f"Error Semantico : La variable {name} y su declaracion difiere en el tipo de dato. En la linea : {p.lineno(1)} ")
     elif p.slice[3].type=="FLOAT" and symbol_table["variables"][p[1]]["type"] != "Double":
-        print(f"Error Semantico : La variable {name} y su declaracion difiere en el tipo de dato ")
-        semantic_errors_list.append(f"Error Semantico : La variable {name} y su declaracion difiere en el tipo de dato ")
+        print(f"Error Semantico : La variable {name} y su declaracion difiere en el tipo de dato.  ")
+        semantic_errors_list.append(f"Error Semantico : La variable {name} y su declaracion difiere en el tipo de dato. En la linea : {p.lineno(1)} ")
     elif p.slice[3].type=="BOOLEAN" and symbol_table["variables"][p[1]]["type"] != "Boolean":
         print(f"Error Semantico : La variable {name} y su declaracion difiere en el tipo de dato ")
-        semantic_errors_list.append(f"Error Semantico : La variable {name} y su declaracion difiere en el tipo de dato ")
+        semantic_errors_list.append(f"Error Semantico : La variable {name} y su declaracion difiere en el tipo de dato. En la linea : {p.lineno(1)} ")
     elif p.slice[3].type=="STRING" and symbol_table["variables"][p[1]]["type"] != "String":
         print(f"Error Semantico : La variable {name} y su declaracion difiere en el tipo de dato ")
-        semantic_errors_list.append(f"Error Semantico : La variable {name} y su declaracion difiere en el tipo de dato ")
+        semantic_errors_list.append(f"Error Semantico : La variable {name} y su declaracion difiere en el tipo de dato. En la linea : {p.lineno(1)} ")
 
+    if symbol_table["variables"][p[1]]["declaration"] == "val":
+        print(f"Error Semantico : La variable {name} y su declaracion es un tipo constante ")
+        semantic_errors_list.append(f"Error Semantico : La variable {name} y su declaracion es un tipo constante. En la linea : {p.lineno(1)} ")
     # print(symbol_table)
 
 #Regla definida por Jefferson Saltos
@@ -158,7 +165,7 @@ def p_identifier_number(p):
     ''' identifier_number : IDENTIFIER'''
     if p[1] not in symbol_table["variables"]:
         print(f"Error Semantico: La variable {p[1]} no existe")
-        semantic_errors_list.append(f"Error Semantico: La variable {p[1]} no existe")
+        semantic_errors_list.append(f"Error Semantico: La variable {p[1]} no existe . En la linea : {p.lineno(1)}")
     else :
         p.slice[0].type= types[symbol_table["variables"][p[1]]["type"]] #"Long"
 
@@ -204,8 +211,9 @@ def p_identifier_boolean(p):
     ''' identifier_boolean : IDENTIFIER'''
     if p[1] not in symbol_table["variables"]:
         print(f"Error Semantico: La variable {p[1]} no existe")
-        semantic_errors_list.append(f"Error Semantico: La variable {p[1]} no existe")
-    p.slice[0].type= types[symbol_table["variables"][p[1]]["type"]] 
+        semantic_errors_list.append(f"Error Semantico: La variable {p[1]} no existe. En la linea : {p.lineno(1)}")
+    else: 
+        p.slice[0].type= types[symbol_table["variables"][p[1]]["type"]] 
 
 #Regla definida por Jefferson Saltos
 def p_comparison_operation(p):
@@ -225,8 +233,9 @@ def p_identifier_comparison(p):
     ''' identifier_comparison : IDENTIFIER'''
     if p[1] not in symbol_table["variables"]:
         print(f"Error Semantico: La variable {p[1]} no existe")
-        semantic_errors_list.append(f"Error Semantico: La variable {p[1]} no existe")
-    p.slice[0].type= types[symbol_table["variables"][p[1]]["type"]] 
+        semantic_errors_list.append(f"Error Semantico: La variable {p[1]} no existe. En la linea : {p.lineno(1)}")
+    else:
+        p.slice[0].type= types[symbol_table["variables"][p[1]]["type"]] 
     
 
 #Regla definida por Jefferson Saltos
@@ -245,7 +254,7 @@ def p_print_function(p):
     'print_function : PRINT LPAREN function_input RPAREN'
     if p[3] not in [0, 1]:
         print("Error Semantico: La funcion print tiene número erroneo de argumentos")
-        semantic_errors_list.append("Error Semantico: La funcion print tiene número erroneo de argumentos")
+        semantic_errors_list.append(f"Error Semantico: La funcion print tiene número erroneo de argumentos. En la linea : {p.lineno(3)}")
 
 
 #Regla definida por Jefferson Saltos
@@ -253,7 +262,7 @@ def p_println_function(p):
     'println_function : PRINTLN LPAREN function_input RPAREN'
     if p[3] not in [0, 1]:
         print("Error Semantico: La funcion println tiene número erroneo de argumentos")
-        semantic_errors_list.append("Error Semantico: La funcion println tiene número erroneo de argumentos")
+        semantic_errors_list.append(f"Error Semantico: La funcion println tiene número erroneo de argumentos. En la linea : {p.lineno(3)}")
 
 #Regla definida por Jefferson Saltos
 def p_call_function(p):
@@ -341,11 +350,26 @@ def p_for_iterable(p):
     tipo = symbol_table["variables"][p[3]]["type"]
     if tipo not in ["String", "MutableList", "MutableMap"]:
         print(f"Error Semantico : {tipo} no es iterable")
-        semantic_errors_list.append(f"Error Semantico : {tipo} no es iterable")
+        semantic_errors_list.append(f"Error Semantico : {tipo} no es iterable. En la linea : {p.lineno(3)}")
+    else:
+        name=p[1]
+        declaration= "val"
+        symbol_table["variables"][name]={
+            "type" : tipo , 
+            "declaration" : declaration
+        }
+    
 
 
 def p_for_range(p):
     ''' for_range : IDENTIFIER IN INTEGER RANGE INTEGER '''
+    name=p[1]
+    type="Long"
+    declaration= "var"
+    symbol_table["variables"][name]={
+        "type" : type , 
+        "declaration" : declaration
+    }
 
 #Regla definida por Steve Robinson
 def p_while_loop(p):
@@ -469,6 +493,7 @@ def p_atributes(p):
 def p_declaration_start(p):
     """declaration_start : VAL
     | VAR"""
+    p[0]=p[1]
 
 #Regla definida por Jefferson Saltos
 def p_empty(p):
@@ -507,7 +532,7 @@ ecuador_tz = ZoneInfo("America/Guayaquil")
 ahora = datetime.now(ecuador_tz)
 nombre_archivo = f"semantico-{usuario_git}-{ahora.strftime('%d-%m-%Y-%Hh%M')}.txt"
 ruta = f"logs/{nombre_archivo}"
-input_file_path = 'algoritmos/SemanticTest.kt'
+input_file_path = 'algoritmos/HelloWorld.kt'
 
 os.makedirs(os.path.dirname(ruta), exist_ok=True)
 log_content = []
@@ -536,11 +561,13 @@ try:
 except FileNotFoundError:
     log_content.append("ESTADO: FALLIDO")
     log_content.append(f"ERROR CRÍTICO: No se pudo encontrar el archivo de entrada en '{input_file_path}'.")
+
 except Exception as e:
     log_content.append("ESTADO: FALLIDO (Error Inesperado del Script)")
     log_content.append(f"\n--- Mensaje de Error ---")
     log_content.append(str(e))
 
+    
 try:
     with open(ruta, "w", encoding="utf-8") as f:
         f.write("\n".join(log_content))

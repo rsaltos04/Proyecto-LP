@@ -5,7 +5,9 @@ fun main() {
 
     var luis : Boolean = true
     var paco : Boolean = true && !true
+    val jobs : Long = 3
 
+    jobs = 22
     var mr_robot : Boolean = 23 == 22
     luis = false
     paco = 7923173
@@ -25,6 +27,7 @@ fun main() {
 
 paco = a && pepe
 
+for 
 
 // Prueba de Jefferson Saltos
 
