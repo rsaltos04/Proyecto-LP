@@ -155,7 +155,8 @@ t_ignore  = ' \t'
 def t_error(t):
     print(f"Caracter lexico no existente '{t.value[0]}' en el lenguaje Kotlin en línea {t.lineno}, posición {t.lexpos}")
     t.lexer.skip(1)
-    return f"Caracter lexico no existente '{t.value[0]}' en el lenguaje Kotlin en línea {t.lineno}, posición {t.lexpos}"
+    #return f"Caracter lexico no existente '{t.value[0]}' en el lenguaje Kotlin en línea {t.lineno}, posición {t.lexpos}"
+    return t
 
 # Build the lexer
 lexer = lex.lex()
