@@ -9,7 +9,7 @@ def analizar_sintaxis(data):
     
     syntax_errors_list = []
     semantic_errors_list = []
-    lexic_errors_list= []
+
 
     #Tabla de simbolos
     symbol_table = {
@@ -510,11 +510,7 @@ def analizar_sintaxis(data):
         
         print(p.type)
         if not p:
-            mensaje = "Error sintáctico: Fin de archivo inesperado (EOF)"
-         
-        elif p.type=="error":
-            lexic_errors_list.append(f"Error Lexico caracter no valido :{p.value}  En la linea : {p.lineno}")
-            print("Hola")
+            mensaje = "Error sintaxis al final del archivo"
 
         else:
             mensaje = f"Error sintáctico en la línea {p.lineno}: Token inesperado '{p.value}' (Tipo: {p.type})"
@@ -592,4 +588,4 @@ def analizar_sintaxis(data):
         print(f"Detalle: {io_e}")
     """
     print(symbol_table)
-    return syntax_errors_list, semantic_errors_list, symbol_table,lexic_errors_list
+    return syntax_errors_list, semantic_errors_list, symbol_table

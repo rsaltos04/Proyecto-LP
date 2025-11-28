@@ -3,6 +3,7 @@ import ply.lex as lex
 from datetime import datetime
 import os
 
+lexic_errors_list=[]
 # Inicio del avance 1 por parte de Jefferson Saltos
 reserved = {
    "fun": "FUNCTION",
@@ -24,7 +25,6 @@ reserved = {
 # List of token names.   This is always required
 tokens = (
    'COLON',
-   'SEMICOLON',
    'INTEGER',
    'FLOAT',
    'PLUS',
@@ -35,8 +35,6 @@ tokens = (
    'RPAREN',
    'LBRACE',
    'RBRACE',
-   'LBRACKET',
-   'RBRACKET',
    'IDENTIFIER',
    'LESS_THAN',
    'BOOLEAN',
@@ -61,7 +59,6 @@ tokens = (
 t_COMMA = r","
 t_COLON= r':'
 t_RANGE = r"\.\."
-t_SEMICOLON= r';'
 t_PLUS    = r'\+'
 t_MINUS   = r'-'
 t_TIMES   = r'\*'
@@ -71,8 +68,6 @@ t_LPAREN  = r'\('
 t_RPAREN  = r'\)'
 t_LBRACE= r'{'
 t_RBRACE= r'}'
-t_LBRACKET= r'\['
-t_RBRACKET= r'\]'
 t_LESS_THAN= r'<'
 t_GREATER_THAN=r">"
 t_AND=r'&&'
@@ -156,7 +151,7 @@ def t_error(t):
     print(f"Caracter lexico no existente '{t.value[0]}' en el lenguaje Kotlin en línea {t.lineno}, posición {t.lexpos}")
     t.lexer.skip(1)
     #return f"Caracter lexico no existente '{t.value[0]}' en el lenguaje Kotlin en línea {t.lineno}, posición {t.lexpos}"
-    return t
+    return lexic_errors_list.append(f"Caracter lexico no existente '{t.value[0]}' en el lenguaje Kotlin en línea {t.lineno}")
 
 # Build the lexer
 lexer = lex.lex()

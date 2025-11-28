@@ -44,11 +44,54 @@ class InterpreteApp(ctk.CTk):
         self.btn_ejecutar = ctk.CTkButton(self.header_frame, text="▶ Ejecutar", command=self.ejecutar_analisis, width=100)
         self.btn_ejecutar.pack(side="right", padx=(5, 20))
 
-        # === 2. Área del Editor de Código ===
-        # Usamos una fuente monoespaciada para el código
+       # === 2. Área del Editor de Código (MODIFICADO PARA LINE NUMBERS) ===
         self.editor_font = ctk.CTkFont(family="Consolas", size=14)
-        self.editor_textbox = ctk.CTkTextbox(self, font=self.editor_font, activate_scrollbars=True)
-        self.editor_textbox.grid(row=1, column=0, padx=20, pady=10, sticky="nsew")
+
+        # ### NUEVO: Frame contenedor para agrupar números y editor
+        self.editor_container = ctk.CTkFrame(self)
+        self.editor_container.grid(row=1, column=0, padx=20, pady=10, sticky="nsew")
+        
+        # Configurar el grid del contenedor
+        self.editor_container.grid_columnconfigure(0, weight=0) # Columna de números (fija)
+        self.editor_container.grid_columnconfigure(1, weight=1) # Columna de código (expandible)
+        self.editor_container.grid_rowconfigure(0, weight=1)
+
+        # ### NUEVO: Textbox para los números de línea
+        # Desactivamos scrollbar propio, color de fondo diferente, texto gris
+        self.line_numbers = ctk.CTkTextbox(
+            self.editor_container, 
+            width=40, 
+            font=self.editor_font,
+            fg_color="#2b2b2b", # Un poco más claro o diferente que el editor
+            text_color="#888888",
+            activate_scrollbars=False 
+        )
+        self.line_numbers.grid(row=0, column=0, sticky="ns")
+        self.line_numbers.insert("0.0", "1")
+        self.line_numbers.configure(state="disabled") # Solo lectura
+
+        # Editor principal
+        self.editor_textbox = ctk.CTkTextbox(
+            self.editor_container, 
+            font=self.editor_font, 
+            activate_scrollbars=True
+        )
+        self.editor_textbox.grid(row=0, column=1, sticky="nsew")
+
+        # ### NUEVO: Sincronización de eventos
+        # 1. Cuando escribimos, actualizamos los números
+        self.editor_textbox.bind("<KeyRelease>", self.actualizar_numeros_linea)
+        self.editor_textbox.bind("<Return>", self.actualizar_numeros_linea)
+        self.editor_textbox.bind("<BackSpace>", self.actualizar_numeros_linea)
+        self.editor_textbox.bind("<<Paste>>", self.actualizar_numeros_linea)
+        self.editor_textbox.bind("<Button-1>", self.actualizar_numeros_linea) # Click
+
+        # 2. Sincronizar el Scroll (Esto es un poco avanzado, accedemos al widget interno de tkinter)
+        # Obtenemos la función de scroll original del CTKTextbox
+        self._orig_yview_command = self.editor_textbox._textbox['yscrollcommand']
+        
+        # Configuramos una función proxy que mueva ambos
+        self.editor_textbox._textbox.configure(yscrollcommand=self._on_scroll_text)
         
         # Texto de ejemplo inicial
         codigo_inicial = """fun main() {
@@ -60,19 +103,18 @@ class InterpreteApp(ctk.CTk):
     }
 }"""
         self.editor_textbox.insert("0.0", codigo_inicial)
+        self.actualizar_numeros_linea() # Llamada inicial
 
-        # === 3. Área de Resultados (Consola/Errores) ===
+        # === 3. Área de Resultados ===
         self.resultados_frame = ctk.CTkFrame(self)
         self.resultados_frame.grid(row=3, column=0, padx=20, pady=(10, 20), sticky="nsew")
         
         self.label_resultados = ctk.CTkLabel(self.resultados_frame, text="Resultados del Análisis (Consola / Errores)", anchor="w")
         self.label_resultados.pack(fill="x", padx=10, pady=5)
 
-        # Textbox de solo lectura para mostrar la salida
         self.consola_textbox = ctk.CTkTextbox(self, font=self.editor_font, activate_scrollbars=True, height=150)
         self.consola_textbox.grid(row=4, column=0, padx=20, pady=(0, 20), sticky="nsew")
-        self.consola_textbox.configure(state="disabled") # Inicialmente deshabilitado para lectura
-
+        self.consola_textbox.configure(state="disabled")
 
     # --- Funciones de los Botones (Stubs) ---
 
@@ -90,9 +132,10 @@ class InterpreteApp(ctk.CTk):
         print(codigo_fuente)
         
         resultado=Analizador_Sintactico.analizar_sintaxis(codigo_fuente)
-        syntax_errors_list, semantic_errors_list, symbol_table,lexic_errors_list=resultado
-        print( syntax_errors_list, semantic_errors_list, symbol_table,lexic_errors_list)
-
+        syntax_errors_list, semantic_errors_list, symbol_table=resultado
+        print( syntax_errors_list, semantic_errors_list, symbol_table)
+        lexic_errors_list=Analizador_Lexico.lexic_errors_list
+        Analizador_Lexico.lexic_errors_list=[]
 
        
         salida = "\n"
@@ -101,20 +144,68 @@ class InterpreteApp(ctk.CTk):
             salida+= "--- Errores Lexicos ---\n"
             for errores in lexic_errors_list:
                 salida+= f"{errores} \n"
-        elif len(syntax_errors_list)>0:
+        if len(syntax_errors_list)>0:
             salida+= "--- Errores Sintacticos ---\n"
             for errores in syntax_errors_list:
                 salida+= f"{errores} \n"
-        elif len(semantic_errors_list)>0:
+        if len(semantic_errors_list)>0:
             salida+= "--- Errores Semanticos ---\n"
             for errores in semantic_errors_list:
                 salida+= f"{errores} \n"
-        else:
+        if len(semantic_errors_list)==0 and len(syntax_errors_list)==0 and len(lexic_errors_list)==0:
             salida+= "El codigo se encuentra sin errores lexicos, sintaticos y semanticos \n"  
         
         self.mostrar_en_consola(salida)
         print("Ejecutando análisis...")
 
+
+
+    def _on_scroll_text(self, *args):
+        """
+        Función Proxy para sincronizar el scroll.
+        Mueve la barra de números cuando se mueve el editor.
+        """
+        # 1. Mover la vista de los números
+        self.line_numbers._textbox.yview_moveto(args[0])
+        
+        # 2. Ejecutar el scroll original del editor
+        if self._orig_yview_command:
+            # CORRECCIÓN: Verificar si es una cadena (comando Tcl) o una función
+            if isinstance(self._orig_yview_command, str):
+                # Si es string, usamos tk.call para ejecutar el comando interno de Tcl
+                self.editor_textbox._textbox.tk.call(self._orig_yview_command, *args)
+            else:
+                # Si es función, la llamamos normalmente
+                self._orig_yview_command(*args)
+
+
+
+    def actualizar_numeros_linea(self, event=None):
+        """
+        ### NUEVO: Recalcula las líneas y actualiza la columna izquierda.
+        """
+        # Obtener el contenido
+        codigo = self.editor_textbox.get("0.0", "end")
+        
+        # Contar líneas (la última línea siempre es vacía en tkinter, restamos 1 si es necesario visualmente)
+        # Usamos int(self.editor_textbox.index('end-1c').split('.')[0]) para obtener el índice real de la última línea
+        try:
+            numero_lineas = int(self.editor_textbox.index('end-1c').split('.')[0])
+        except:
+            numero_lineas = 1
+
+        # Generar string de números "1\n2\n3..."
+        line_string = "\n".join(str(i) for i in range(1, numero_lineas + 1))
+        
+        # Actualizar widget de números
+        self.line_numbers.configure(state="normal")
+        self.line_numbers.delete("0.0", "end")
+        self.line_numbers.insert("0.0", line_string)
+        self.line_numbers.configure(state="disabled")
+        
+        # Asegurar que la vista esté sincronizada después de actualizar
+        # (Por si se agregaron líneas y el scroll cambió)
+        self.line_numbers._textbox.yview_moveto(self.editor_textbox._textbox.yview()[0])
 
     def mostrar_en_consola(self, texto):
         # Habilitar temporalmente para insertar texto, luego deshabilitar de nuevo
